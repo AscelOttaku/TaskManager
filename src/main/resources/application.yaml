@@ -1,0 +1,37 @@
+spring:
+  application:
+     name: TaskManager
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:h2:./db/TaskManagerBD;AUTO_SERVER=TRUE
+    username: Kanybek
+    password: Kanybek12345
+    driver-class-name: org.h2.Driver
+
+  mail:
+    host: smtp.gmail.com
+    username: zhanybek20065732@gmail.com
+    password: xmqh zdnf kjld qdkh
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth:
+            true
+          starttls:
+            enable: true
+
+  flyway:
+    url: jdbc:h2:./db/TaskManagerBD;AUTO_SERVER=TRUE
+    user: Kanybek
+    password: Kanybek12345
+    locations: classpath:db/migration
+    enabled: true
+    validate-on-migrate: false
+
+  jwt:
+    secret_key: some-long-secret-string-at-least-64-chars-1234567890abcdef1234567890abcdef
+
