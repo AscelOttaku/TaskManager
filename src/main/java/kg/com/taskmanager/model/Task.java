@@ -1,6 +1,7 @@
 package kg.com.taskmanager.model;
 
 import jakarta.persistence.*;
+import kg.com.taskmanager.enums.TaskStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description", columnDefinition = "TEXT")
@@ -28,11 +29,13 @@ public class Task {
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
 
-    @Column(name = "status", length = 50)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 50, nullable = false)
+    private TaskStatus status;
 
     @PrePersist
     protected void onCreate() {
+        status = TaskStatus.NEW;
         createdTime = LocalDateTime.now();
         updatedTime = LocalDateTime.now();
     }

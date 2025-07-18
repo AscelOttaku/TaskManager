@@ -45,8 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
                         return;
                     }
-                    String finalEmail = email;
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(finalEmail);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
