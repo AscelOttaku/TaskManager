@@ -6,7 +6,10 @@ import kg.com.taskmanager.dto.mapper.TaskMapper;
 import kg.com.taskmanager.dto.mapper.impl.PageHolderWrapper;
 import kg.com.taskmanager.enums.TaskStatus;
 import kg.com.taskmanager.model.Task;
+import kg.com.taskmanager.model.User;
+import kg.com.taskmanager.producer.TaskEventProducer;
 import kg.com.taskmanager.repository.TaskRepository;
+import kg.com.taskmanager.service.AuthorizedUserService;
 import kg.com.taskmanager.service.TaskService;
 import kg.com.taskmanager.util.Util;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +31,17 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final PageHolderWrapper pageHolderWrapper;
+    private final AuthorizedUserService authorizedUserService;
+    private final TaskEventProducer taskEventProducer;
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     @Override
     public TaskDto createTask(TaskDto taskDto) {
         Task task = taskMapper.mapToModel(taskDto);
+        task.setUser(authorizedUserService.getAuthUser());
         TaskDto result = taskMapper.mapToDto(taskRepository.save(task));
         log.info("Task created with id: {}", result.getId());
+        taskEventProducer.publishTaskCreatedEvent(result);
         return result;
     }
 

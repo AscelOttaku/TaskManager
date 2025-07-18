@@ -5,8 +5,12 @@ import kg.com.taskmanager.dto.TaskDto;
 import kg.com.taskmanager.dto.mapper.TaskMapper;
 import kg.com.taskmanager.dto.mapper.impl.PageHolderWrapper;
 import kg.com.taskmanager.enums.TaskStatus;
+import kg.com.taskmanager.model.Role;
 import kg.com.taskmanager.model.Task;
+import kg.com.taskmanager.model.User;
+import kg.com.taskmanager.producer.TaskEventProducer;
 import kg.com.taskmanager.repository.TaskRepository;
+import kg.com.taskmanager.service.impl.AuthorizedUserServiceImpl;
 import kg.com.taskmanager.service.impl.TaskServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +43,12 @@ class TaskServiceTest {
 
     @Mock
     private PageHolderWrapper pageHolderWrapper;
+
+    @Mock
+    private AuthorizedUserServiceImpl authorizedUserService;
+
+    @Mock
+    private TaskEventProducer taskEventProducer;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -85,6 +96,11 @@ class TaskServiceTest {
         Mockito.when(taskMapper.mapToModel(taskDto)).thenReturn(task);
         Mockito.when(taskRepository.save(task)).thenReturn(task);
         Mockito.when(taskMapper.mapToDto(task)).thenReturn(savedDto);
+        Mockito.doNothing().when(taskEventProducer).publishTaskCreatedEvent(Mockito.any(TaskDto.class));
+
+        Role role = new Role();
+        role.setId(1L);
+        Mockito.when(authorizedUserService.getAuthUser()).thenReturn(new User(1L, "testUser", "TestPassword", "zhanybek20065732@gmail.com", role));
 
         TaskDto createdTask = taskService.createTask(taskDto);
 

@@ -29,4 +29,7 @@ public class TaskDto {
 
     @Null(message = "Task status must be null when creating a task", groups = CreateGroup.class)
     private TaskStatus taskStatus;
+
+    @Null(message = "Task user must be null when creating a task and updating", groups = {CreateGroup.class, UpdateGroup.class})
+    private UserDto userDto;
 }

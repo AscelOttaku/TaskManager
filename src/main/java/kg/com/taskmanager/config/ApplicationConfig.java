@@ -1,16 +1,12 @@
 package kg.com.taskmanager.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
-@RequiredArgsConstructor
+@EnableAsync
 public class ApplicationConfig {
 
     @Bean

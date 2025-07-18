@@ -1,7 +1,9 @@
 package kg.com.taskmanager.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +16,8 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id

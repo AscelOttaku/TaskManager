@@ -2,7 +2,6 @@ package kg.com.taskmanager.model;
 
 import jakarta.persistence.*;
 import kg.com.taskmanager.enums.TaskStatus;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +34,10 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false)
     private TaskStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Task(Long id, String name, String description, TaskStatus taskStatus) {
         this.id = id;
