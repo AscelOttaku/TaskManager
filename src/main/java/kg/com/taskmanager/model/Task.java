@@ -2,7 +2,9 @@ package kg.com.taskmanager.model;
 
 import jakarta.persistence.*;
 import kg.com.taskmanager.enums.TaskStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "tasks")
+@NoArgsConstructor
 public class Task {
 
     @Id
@@ -32,6 +35,13 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false)
     private TaskStatus status;
+
+    public Task(Long id, String name, String description, TaskStatus taskStatus) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = taskStatus;
+    }
 
     @PrePersist
     protected void onCreate() {
