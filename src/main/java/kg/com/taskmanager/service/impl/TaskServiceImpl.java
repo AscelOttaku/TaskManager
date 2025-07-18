@@ -6,7 +6,6 @@ import kg.com.taskmanager.dto.mapper.TaskMapper;
 import kg.com.taskmanager.dto.mapper.impl.PageHolderWrapper;
 import kg.com.taskmanager.enums.TaskStatus;
 import kg.com.taskmanager.model.Task;
-import kg.com.taskmanager.model.User;
 import kg.com.taskmanager.producer.TaskEventProducer;
 import kg.com.taskmanager.repository.TaskRepository;
 import kg.com.taskmanager.service.AuthorizedUserService;
@@ -14,6 +13,8 @@ import kg.com.taskmanager.service.TaskService;
 import kg.com.taskmanager.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +35,7 @@ public class TaskServiceImpl implements TaskService {
     private final AuthorizedUserService authorizedUserService;
     private final TaskEventProducer taskEventProducer;
 
+    @CacheEvict(value = "tasks", allEntries = true)
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     @Override
     public TaskDto createTask(TaskDto taskDto) {
@@ -45,6 +47,7 @@ public class TaskServiceImpl implements TaskService {
         return result;
     }
 
+    @CacheEvict(value = "tasks", allEntries = true)
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     @Override
     public TaskDto updateTask(TaskDto taskDto) {
@@ -60,6 +63,7 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.mapToDto(task);
     }
 
+    @CacheEvict(value = "tasks", allEntries = true)
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS)
     @Override
     public TaskDto deleteTaskById(Long id) {
@@ -71,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.mapToDto(task);
     }
 
+    @CacheEvict(value = "tasks", allEntries = true)
     @Transactional
     @Override
     public void updateTaskStatus(Long id, String taskStatus) {
@@ -88,6 +93,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Task status updated for id: {}", id);
     }
 
+    @Cacheable(value = "tasks", key = "#page + '-' + #size")
     @Override
     public PageHolder<TaskDto> findAllTasks(int page, int size) {
         log.info("Finding all tasks, page: {}, size: {}", page, size);

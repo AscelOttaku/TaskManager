@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
                 + "<p>Here are the details:</p>"
                 + "<ul>"
                 + "<li><strong>Task Name:</strong> " + taskDto.getName() + "</li>"
-                + "<li><strong>Status:</strong> " + taskDto.getTaskStatus() + "</li>"
+                + "<li><strong>Description:</strong> " + taskDto.getDescription() + "</li>"
                 + "</ul>"
                 + "<br>"
                 + "<p>If you did not create this task, please ignore this message.</p>"
