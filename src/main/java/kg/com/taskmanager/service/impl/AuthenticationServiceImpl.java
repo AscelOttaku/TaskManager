@@ -5,6 +5,7 @@ import kg.com.taskmanager.dto.auth.AuthenticationResponse;
 import kg.com.taskmanager.dto.auth.SignInRequest;
 import kg.com.taskmanager.dto.auth.SignUpRequest;
 import kg.com.taskmanager.dto.mapper.SignRequestMapper;
+import kg.com.taskmanager.enums.RoleEnum;
 import kg.com.taskmanager.exceptions.AlreadyExistsException;
 import kg.com.taskmanager.exceptions.InvalidPasswordException;
 import kg.com.taskmanager.model.User;
@@ -13,6 +14,7 @@ import kg.com.taskmanager.repository.UserRepository;
 import kg.com.taskmanager.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.BeanDefinitionDsl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         User users = signRequestMapper.mapToModel(request);
-        users.setRole(roleRepository.findByRoleName("USER")
+        users.setRole(roleRepository.findByRoleName(RoleEnum.ROLE_USER)
                 .orElseThrow(() -> new NoSuchElementException("Роль USER не найдена")));
 
         userRepository.save(users);

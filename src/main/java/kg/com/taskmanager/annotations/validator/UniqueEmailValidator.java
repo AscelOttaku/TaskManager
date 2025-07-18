@@ -23,6 +23,12 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueUserEmail
             return emailExist;
         }
 
+        constraintValidatorContext.disableDefaultConstraintViolation();
+        constraintValidatorContext.buildConstraintViolationWithTemplate(
+                "Email must be a Gmail address (ending with @gmail.com)"
+        )
+                .addPropertyNode("email")
+                .addConstraintViolation();
         return false;
     }
 }

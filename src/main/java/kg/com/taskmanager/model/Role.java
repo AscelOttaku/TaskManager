@@ -21,8 +21,8 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "role_name", nullable = false)
     private RoleEnum roleName;
 
     @ManyToOne(fetch = FetchType.EAGER)
