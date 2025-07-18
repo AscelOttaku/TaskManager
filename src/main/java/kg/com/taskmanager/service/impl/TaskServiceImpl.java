@@ -10,6 +10,7 @@ import kg.com.taskmanager.repository.TaskRepository;
 import kg.com.taskmanager.service.TaskService;
 import kg.com.taskmanager.util.Util;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
@@ -31,31 +33,41 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTask(TaskDto taskDto) {
         Task task = taskMapper.mapToModel(taskDto);
-        return taskMapper.mapToDto(taskRepository.save(task));
+        TaskDto result = taskMapper.mapToDto(taskRepository.save(task));
+        log.info("Task created with id: {}", result.getId());
+        return result;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     @Override
     public TaskDto updateTask(TaskDto taskDto) {
+        log.info("Updating task with id: {}", taskDto.getId());
         Task task = taskRepository.findById(taskDto.getId())
-                .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + taskDto.getId()));
+                .orElseThrow(() -> {
+                    log.error("Task not found with id: {}", taskDto.getId());
+                    return new NoSuchElementException("Task not found with id: " + taskDto.getId());
+                });
 
         taskMapper.updateModel(task, taskDto);
+        log.info("Updating task with id: {}", taskDto.getId());
         return taskMapper.mapToDto(task);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.SUPPORTS)
     @Override
     public TaskDto deleteTaskById(Long id) {
+        log.info("Deleting task with id: {}", id);
         var task = taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
         taskRepository.delete(task);
+        log.info("Task deleted: {}", id);
         return taskMapper.mapToDto(task);
     }
 
     @Transactional
     @Override
     public void updateTaskStatus(Long id, String taskStatus) {
+        log.info("Updating status for task id: {} to {}", id, taskStatus);
         String taskStatusUpper = taskStatus.toUpperCase();
         if (!Util.isValidEnumValue(TaskStatus.class, taskStatus)) {
             throw new IllegalArgumentException("Invalid task status: " + taskStatus);
@@ -66,10 +78,12 @@ public class TaskServiceImpl implements TaskService {
         if (updated == 0) {
             throw new NoSuchElementException("Task not found with id: " + id);
         }
+        log.info("Task status updated for id: {}", id);
     }
 
     @Override
     public PageHolder<TaskDto> findAllTasks(int page, int size) {
+        log.info("Finding all tasks, page: {}, size: {}", page, size);
         var pageable = PageRequest.of(page, size, Sort.by("updatedTime").descending());
         Page<TaskDto> taskDtos = taskRepository.findAll(pageable)
                 .map(taskMapper::mapToDto);
@@ -78,8 +92,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto findTaskById(Long id) {
+        log.info("Finding task by id: {}", id);
         return taskRepository.findById(id)
                 .map(taskMapper::mapToDto)
-                .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
+                .orElseThrow(() -> {
+                    log.error("Task not found with id: {}", id);
+                    return new NoSuchElementException("Task not found with id: " + id);
+                });
     }
 }
