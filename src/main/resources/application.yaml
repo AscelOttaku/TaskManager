@@ -35,3 +35,14 @@ spring:
   jwt:
     secret_key: some-long-secret-string-at-least-64-chars-1234567890abcdef1234567890abcdef
 
+logging:
+  level:
+    org:
+      springframework:
+        security: error
+        web:
+          servlet:
+            DispatcherServlet: INFO
+  file:
+    path: logs
+
