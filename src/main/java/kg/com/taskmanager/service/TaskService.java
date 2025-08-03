@@ -22,4 +22,6 @@ public interface TaskService {
     PageHolder<TaskDto> findAllTasks(int page, int size);
 
     TaskDto findTaskById(Long id);
+
+    Object getCacheData();
 }

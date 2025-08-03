@@ -1,4 +1,4 @@
-package kg.com.taskmanager.service;
+package kg.com.taskmanager.unit.service;
 
 import kg.com.taskmanager.dto.PageHolder;
 import kg.com.taskmanager.dto.TaskDto;

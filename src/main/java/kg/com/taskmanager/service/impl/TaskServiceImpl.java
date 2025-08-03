@@ -13,6 +13,7 @@ import kg.com.taskmanager.service.TaskService;
 import kg.com.taskmanager.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class TaskServiceImpl implements TaskService {
     private final PageHolderWrapper pageHolderWrapper;
     private final AuthorizedUserService authorizedUserService;
     private final TaskEventProducer taskEventProducer;
+    private final CacheManager cacheManager;
 
     @CacheEvict(value = "tasks", allEntries = true)
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
@@ -112,5 +114,16 @@ public class TaskServiceImpl implements TaskService {
                     log.error("Task not found with id: {}", id);
                     return new NoSuchElementException("Task not found with id: " + id);
                 });
+    }
+
+    @Override
+    public Object getCacheData() {
+        var cacheData = cacheManager.getCache("tasks");
+        if  (cacheData != null) {
+            return cacheData.getNativeCache();
+        } else {
+            log.warn("Cache 'tasks' not found");
+            return "Cache 'tasks' not found";
+        }
     }
 }

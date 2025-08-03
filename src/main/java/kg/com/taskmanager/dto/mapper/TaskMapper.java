@@ -8,10 +8,13 @@ import org.mapstruct.*;
 public interface TaskMapper {
 
     @Mapping(target = "user", source = "userDto")
+    @Mapping(target = "status", source = "taskStatus")
     Task mapToModel(TaskDto taskDto);
+    @Mapping(target = "taskStatus", source = "status")
     @Mapping(target = "userDto", source = "user")
     TaskDto mapToDto(Task task);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "taskStatus", source = "status")
     void updateModel(Task task, @MappingTarget TaskDto taskDto);
 }

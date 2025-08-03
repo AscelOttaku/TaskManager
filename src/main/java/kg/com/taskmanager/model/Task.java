@@ -33,7 +33,7 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.NEW;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
