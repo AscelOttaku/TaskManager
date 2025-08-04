@@ -1,5 +1,6 @@
 package kg.com.taskmanager.controller;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.groups.Default;
 import kg.com.taskmanager.dto.PageHolder;
 import kg.com.taskmanager.dto.TaskDto;
@@ -38,10 +39,10 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/status")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateTaskStatus(
             @PathVariable Long id,
-            @RequestParam String status) {
+            @RequestParam @NotBlank(message = "Status cannot be blank") String status) {
         taskService.updateTaskStatus(id, status);
     }
 
@@ -61,7 +62,10 @@ public class TaskController {
 
     @GetMapping("cache/data")
     @ResponseStatus(HttpStatus.OK)
-    public Object getCacheData() {
-        return taskService.getCacheData();
+    public Object getCacheData(
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
+    ) {
+        return taskService.getCachedTasksByPageAndSize(page, size);
     }
 }

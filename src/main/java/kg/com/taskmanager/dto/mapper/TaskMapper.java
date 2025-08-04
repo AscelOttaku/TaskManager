@@ -15,6 +15,6 @@ public interface TaskMapper {
     TaskDto mapToDto(Task task);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "taskStatus", source = "status")
-    void updateModel(Task task, @MappingTarget TaskDto taskDto);
+    @Mapping(target = "status", source = "taskStatus")
+    void updateModel(TaskDto taskDto, @MappingTarget Task task);
 }

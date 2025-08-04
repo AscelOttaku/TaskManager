@@ -13,6 +13,7 @@ import kg.com.taskmanager.service.TaskService;
 import kg.com.taskmanager.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -54,13 +56,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto updateTask(TaskDto taskDto) {
         log.info("Updating task with id: {}", taskDto.getId());
+
         Task task = taskRepository.findById(taskDto.getId())
                 .orElseThrow(() -> {
                     log.error("Task not found with id: {}", taskDto.getId());
                     return new NoSuchElementException("Task not found with id: " + taskDto.getId());
                 });
 
-        taskMapper.updateModel(task, taskDto);
+        taskMapper.updateModel(taskDto, task);
         log.info("Updating task with id: {}", taskDto.getId());
         return taskMapper.mapToDto(task);
     }
@@ -102,7 +105,9 @@ public class TaskServiceImpl implements TaskService {
         var pageable = PageRequest.of(page, size, Sort.by("updatedTime").descending());
         Page<TaskDto> taskDtos = taskRepository.findAll(pageable)
                 .map(taskMapper::mapToDto);
-        return pageHolderWrapper.wrapPageHolder(taskDtos);
+        var taskPages = pageHolderWrapper.wrapPageHolder(taskDtos);
+        taskPages.getContent().forEach(taskDto -> log.info("Task found: {}", taskDto.getName()));
+        return taskPages;
     }
 
     @Override
@@ -117,13 +122,30 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Object getCacheData() {
-        var cacheData = cacheManager.getCache("tasks");
-        if  (cacheData != null) {
-            return cacheData.getNativeCache();
-        } else {
-            log.warn("Cache 'tasks' not found");
-            return "Cache 'tasks' not found";
+    public PageHolder<TaskDto> getCachedTasksByPageAndSize(int page, int size) {
+        Cache cacheData = cacheManager.getCache("tasks");
+        if (cacheData != null) {
+            Cache.ValueWrapper cacheValue = cacheData.get(page + "-" + size);
+            if (cacheValue != null) {
+                Object cachedObj = cacheValue.get();
+                if (cachedObj instanceof PageHolder<?> tasksPages) {
+                    if (tasksPages.getContent() != null && tasksPages.getContent().stream()
+                            .allMatch(TaskDto.class::isInstance)) {
+                        @SuppressWarnings("unchecked")
+                        PageHolder<TaskDto> result = (PageHolder<TaskDto>) tasksPages;
+                        return result;
+                    }
+                }
+            }
         }
+        return PageHolder.<TaskDto>builder()
+                .content(List.of())
+                .page(0)
+                .size(0)
+                .totalPages(0)
+                .totalElements(0L)
+                .hasNextPage(false)
+                .hasPreviousPage(false)
+                .build();
     }
 }

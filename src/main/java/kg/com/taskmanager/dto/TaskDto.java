@@ -11,10 +11,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @Builder
-public class TaskDto {
+public class TaskDto implements Serializable {
     @Null(message = "Id must be null when creating a task", groups = CreateGroup.class)
     @NotNull(message = "Id must not be null when updating a task", groups = UpdateGroup.class)
     private Long id;

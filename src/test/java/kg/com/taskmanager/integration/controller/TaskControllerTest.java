@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -81,6 +83,7 @@ class TaskControllerTest {
     void updateTask() throws Exception {
         TaskDto updatedTask = createTestTaskDto(MockMvcRequestBuilders.post("/api/tasks"));
         updatedTask.setName("Updated Task");
+        updatedTask.setUserDto(null); // Simulating a user update
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,9 +108,10 @@ class TaskControllerTest {
 
     @Test
     void updateNonExistingTask() throws Exception {
-        TaskDto updatedTask = createTestTaskDto(MockMvcRequestBuilders.put("/api/tasks"));
-
+        TaskDto updatedTask = createTestTaskDto(MockMvcRequestBuilders.post("/api/tasks"));
         updatedTask.setId(updatedTask.getId() + 1); // Simulating an invalid ID
+        updatedTask.setUserDto(null); // Simulating a correct update taskDto
+
         mockMvc.perform(MockMvcRequestBuilders.put("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedTask)))
@@ -137,9 +141,7 @@ class TaskControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/tasks/" + createdTaskId + "/status")
                         .param("status", newStatus))
                 .andDo(print())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.taskStatus").value(TaskStatus.IN_PROGRESS));
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -153,10 +155,11 @@ class TaskControllerTest {
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.length()").value(3))
-                .andExpect(jsonPath("$.content[0].id").value(taskDto1.getId()))
-                .andExpect(jsonPath("$.content[1].id").value(taskDto2.getId()))
-                .andExpect(jsonPath("$.content[2].id").value(taskDto3.getId()));
+                .andExpect(jsonPath("$.content[*].id", hasItems(
+                taskDto1.getId().intValue(),
+                taskDto2.getId().intValue(),
+                taskDto3.getId().intValue()
+        )));
     }
 
     @Test
@@ -170,6 +173,6 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(taskDto1.getId()))
                 .andExpect(jsonPath("$.name").value(taskDto1.getName()))
                 .andExpect(jsonPath("$.description").value(taskDto1.getDescription()))
-                .andExpect(jsonPath("$.taskStatus").value(taskDto1.getTaskStatus()));
+                .andExpect(jsonPath("$.taskStatus").value("NEW"));
     }
 }

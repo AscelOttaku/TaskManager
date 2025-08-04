@@ -1,15 +1,16 @@
 package kg.com.taskmanager.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
-public class PageHolder<T> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PageHolder<T> implements Serializable {
     private List<T> content;
     private Integer page;
     private Integer size;

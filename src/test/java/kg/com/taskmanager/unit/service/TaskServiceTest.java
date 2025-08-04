@@ -1,5 +1,6 @@
 package kg.com.taskmanager.unit.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kg.com.taskmanager.dto.PageHolder;
 import kg.com.taskmanager.dto.TaskDto;
 import kg.com.taskmanager.dto.mapper.TaskMapper;
@@ -162,7 +163,7 @@ class TaskServiceTest {
             task.setDescription(taskDto.getDescription());
             task.setStatus(taskDto.getTaskStatus());
             return null;
-        }).when(taskMapper).updateModel(task, taskDto);
+        }).when(taskMapper).updateModel(taskDto, task);
 
         Mockito.when(taskMapper.mapToDto(task)).thenReturn(updatedTaskDto);
 
