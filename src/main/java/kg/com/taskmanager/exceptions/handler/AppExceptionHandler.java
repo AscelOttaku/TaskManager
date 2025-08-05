@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -47,7 +48,7 @@ public class AppExceptionHandler {
         return buildResponse(e, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
+    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class, UsernameNotFoundException.class})
     public ResponseEntity<ExceptionResponse> handleIllegalArgumentOrNoSuchElement(RuntimeException e) {
         if (e instanceof IllegalArgumentException) {
             return buildResponse(e, HttpStatus.CONFLICT);

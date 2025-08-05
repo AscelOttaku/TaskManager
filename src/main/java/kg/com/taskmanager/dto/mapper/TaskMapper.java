@@ -8,7 +8,6 @@ import org.mapstruct.*;
 public interface TaskMapper {
 
     @Mapping(target = "user", source = "userDto")
-    @Mapping(target = "status", source = "taskStatus")
     Task mapToModel(TaskDto taskDto);
     @Mapping(target = "taskStatus", source = "status")
     @Mapping(target = "userDto", source = "user")

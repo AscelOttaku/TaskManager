@@ -8,10 +8,22 @@ services:
       context: .
     depends_on:
       - redis
+      - rabbitmq
   redis:
     image: redis:latest
     container_name: redis_container
     ports:
         - "6379:6379"
     restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: unless-stopped
+
 
