@@ -11,7 +11,7 @@ spring:
     password: Kanybek12345
     driver-class-name: org.h2.Driver
 
-  #Redis configuration:
+# Redis configuration:
   cache:
     type: redis
     cache-names: redis
@@ -20,6 +20,7 @@ spring:
       host: localhost
       port: 6379
 
+# Email sender configuration
   mail:
     host: smtp.gmail.com
     username: zhanybek20065732@gmail.com
@@ -44,6 +45,21 @@ spring:
   jwt:
     secret_key: some-long-secret-string-at-least-64-chars-1234567890abcdef1234567890abcdef
 
+# Rabit MQ configuration:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+    exchange:
+      name: task-manager-exchange
+
+    queue:
+      name: task-creation-queue
+    routing:
+      key: test-creation-routing-key
+
 logging:
   level:
     org:
@@ -56,4 +72,3 @@ logging:
 
   file:
     path: logs
-

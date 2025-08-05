@@ -47,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
         task.setUser(authorizedUserService.getAuthUser());
         TaskDto result = taskMapper.mapToDto(taskRepository.save(task));
         log.info("Task created with id: {}", result.getId());
-        taskEventProducer.publishTaskCreatedEvent(result);
+        taskEventProducer.sendTaskCreationMessage(result);
         return result;
     }
 

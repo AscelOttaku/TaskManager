@@ -1,6 +1,5 @@
 package kg.com.taskmanager.unit.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kg.com.taskmanager.dto.PageHolder;
 import kg.com.taskmanager.dto.TaskDto;
 import kg.com.taskmanager.dto.mapper.TaskMapper;
@@ -96,7 +95,7 @@ class TaskServiceTest {
         Mockito.when(taskMapper.mapToModel(taskDto)).thenReturn(task);
         Mockito.when(taskRepository.save(task)).thenReturn(task);
         Mockito.when(taskMapper.mapToDto(task)).thenReturn(savedDto);
-        Mockito.doNothing().when(taskEventProducer).publishTaskCreatedEvent(Mockito.any(TaskDto.class));
+        Mockito.doNothing().when(taskEventProducer).sendTaskCreationMessage(Mockito.any(TaskDto.class));
 
         Role role = new Role();
         role.setId(1L);
